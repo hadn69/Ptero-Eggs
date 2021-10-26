@@ -1,0 +1,41 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v1",
+        "update_url": null
+    },
+    "exported_at": "2021-10-26T15:31:46-07:00",
+    "name": "Steam CMD",
+    "author": "panel@hadn69.com",
+    "description": "Meant for satisfactory\r\nhttps:\/\/satisfactory.fandom.com\/wiki\/Dedicated_servers",
+    "features": null,
+    "images": [
+        "quay.io\/parkervcp\/pterodactyl-images:ubuntu_source"
+    ],
+    "file_denylist": [],
+    "startup": ".\/FactoryServer.sh -ServerQueryPort={{SERVER_PORT}} -BeaconPort=27019 -GamePort=27020",
+    "config": {
+        "files": "{}",
+        "startup": "{\r\n    \"done\": \"Steam SDK Loaded!\"\r\n}",
+        "logs": "{\r\n    \"custom\": true,\r\n    \"location\": \"logs\/latest.log\"\r\n}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/bash\r\n# SRCDS Base Installation Script\r\n#\r\n# Server Files: \/mnt\/server\r\napt -y update\r\napt -y --no-install-recommends install curl lib32gcc1 ca-certificates\r\ncd \/tmp\r\ncurl -sSL -o steamcmd.tar.gz http:\/\/media.steampowered.com\/installer\/steamcmd_linux.tar.gz\r\nmkdir -p \/mnt\/server\/steamcmd\r\ntar -xzvf steamcmd.tar.gz -C \/mnt\/server\/steamcmd\r\ncd \/mnt\/server\/steamcmd\r\n# SteamCMD fails otherwise for some reason, even running as root.\r\n# This is changed at the end of the install process anyways.\r\nchown -R root:root \/mnt\r\nexport HOME=\/mnt\/server\r\n.\/steamcmd.sh +login anonymous +force_install_dir \/mnt\/server +app_update ${SRCDS_APPID} +quit\r\nmkdir -p \/mnt\/server\/.steam\/sdk32\r\ncp -v linux32\/steamclient.so ..\/.steam\/sdk32\/steamclient.so",
+            "container": "ubuntu:18.04",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Game ID",
+            "description": "The ID corresponding to the game to download and run using Steam CMD",
+            "env_variable": "SRCDS_APPID",
+            "default_value": "90",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|numeric|digits_between:1,10"
+        }
+    ]
+}
